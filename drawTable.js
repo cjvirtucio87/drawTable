@@ -3,12 +3,14 @@
 
 'use strict';
 
+
+
 //Cell object constructor.
 function TextCell (text) {
 	this.text = text.split('\n');
 }
 
-//minHeight is the length of the array of lines in the text property.
+//minHeight is the length of the array of lines in the text property. 
 TextCell.prototype.minHeight = function () {
 	return this.text.length;
 }
@@ -41,6 +43,26 @@ TextCell.prototype.draw = function (width,height) {
 	return result;
 }
 
+//Underlined cell.
+function UnderlinedCell (inner) {
+	this.inner = inner;
+}
+
+UnderlinedCell.prototype.minHeight = function () {
+	return this.inner.minHeight + 1;
+}
+
+UnderlinedCell.prototype.minWidth = function () {
+	return this.inner.minWidth;
+}
+
+UnderlinedCell.prototype.draw = function () {
+	var innerWidth = this.minWidth;
+	var innerHeight = this.minHeight;
+	var underlined = multiplyString("-",innerWidth);
+	return this.inner.draw(innerWidth,innerHeight).concat(underlined);
+}
+
 //Dimensions
 //Height per row.
 function rowHeights (rows) {
@@ -50,7 +72,6 @@ function rowHeights (rows) {
 		});
 		return getMaxOfArray(cellHeights);
 	});
-	console.log(cellHeightsFlattened);
 	return cellHeightsFlattened;
 }
 
@@ -66,6 +87,14 @@ function colWidths (rows) {
 }
 
 //Utilities
+function multiplyString (string,times) {
+	var output = "";
+	for (var i = 0; i < times; i++) {
+		output += string;
+	}
+	return output;
+}
+
 function getMaxOfArray(array) {
 	return Math.max.apply(null,array);
 }
@@ -111,9 +140,10 @@ function drawTable (data) {
 	var rowsWithCells = makeCells(data);
 	var widths = colWidths(rowsWithCells);
 	var heights = rowHeights(rowsWithCells);
+	
 	return cellsDrawRows(rowsWithCells,widths,heights);
 }
 
-var myData = [["name", "age", "gender"],['-----','-----','-----'],["CJ", "29", "male"], ["Jewel", "27", "female"]];
+var myData = [["name", "age", "gender"],["CJ", "29", "male"], ["Jewel", "27", "female"]];
 
 console.log(drawTable(myData));
